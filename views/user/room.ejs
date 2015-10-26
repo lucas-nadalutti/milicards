@@ -1,0 +1,37 @@
+
+<div class="board-row"></div>
+
+<input id="room-name" type="hidden" value="<%= room %>" />
+
+<script>
+    $(document).ready(function() {
+
+        socket.get('/user/enterRoom', {room: $('#room-name').val()}, function(board) {
+            updateBoard(board);
+        });
+        socket.on('cardChosen', function(board) {
+            updateBoard(board);
+        });
+
+        $('.card').click(function() {
+            socket.get('/user/play', {
+                card: $(this).data('index'),
+                room: $('#room-name').val()
+            });
+        });
+
+        function updateBoard(board) {
+            var cardDivs = '';
+            for (var i = 0; i < board.cards.length; i++) {
+                cardDivs += '<div class="card-box">';
+                cardDivs += '<div class="card" data-index="' + i + '">';
+                cardDivs += '<p>' + board.cards[i].name + '</p>';
+                cardDivs += '</div>';
+                cardDivs += '</div>';
+            };
+            $('.board-row').empty();
+            $('.board-row').append(cardDivs);
+        }
+
+    })
+</script>
